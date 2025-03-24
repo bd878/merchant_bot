@@ -43,6 +43,11 @@ func main() {
 
 	httpServer := merchant.NewHTTPServer(conf.Addr, conf.WebhookPath, b.WebhookHandler())
 
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, merchant.StartHandler)
+
+	b.RegisterHandlerMatchFunc(merchant.MemberKickedMatch, merchant.MemberKickedHandler)
+	b.RegisterHandlerMatchFunc(merchant.MemberRestoredMatch, merchant.MemberRestoredHandler)
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go httpServer.Run(&wg)
