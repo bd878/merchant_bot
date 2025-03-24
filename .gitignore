@@ -1,0 +1,9 @@
+*
+!*.*
+!/*
+*.swo
+*.swn
+*.swp
+a.out
+build/*
+
