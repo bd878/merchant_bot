@@ -1,0 +1,16 @@
+[Unit]
+Description=Telegram Merchant test bot
+After=network.target
+Wants=syslog.target network-online.target
+
+[Service]
+Type=simple
+ExecStart=/srv/merchant_bot/merchant_bot
+Environment=TELEGRAM_MERCHANT_BOT_TOKEN="" \
+	CONFIG_FILE="/srv/merchant_bot/config/prod.json" \
+	TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN=""
+WorkingDirectory="/srv/merchant_bot"
+User=tgb
+
+[Install]
+WantedBy=multi-user.target
