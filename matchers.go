@@ -21,3 +21,14 @@ func MemberRestoredMatch(update *models.Update) bool {
 	}
 	return false
 }
+
+func PreCheckoutUpdateMatch(update *models.Update) bool {
+	return update.PreCheckoutQuery != nil
+}
+
+func SuccessfullPaymentMatch(update *models.Update) bool {
+	if update.Message != nil {
+		return update.Message.SuccessfulPayment != nil
+	}
+	return false
+}

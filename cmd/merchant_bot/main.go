@@ -46,7 +46,13 @@ func main() {
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, merchant.StartHandler)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/invoice", bot.MatchTypeExact, merchant.InvoiceHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/transactions", bot.MatchTypeExact, merchant.ShowTransactions)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/terms", bot.MatchTypeExact, merchant.TermsHandler)
 
+	// TODO: receive inline invoices
+
+	b.RegisterHandlerMatchFunc(merchant.PreCheckoutUpdateMatch, merchant.PreCheckoutUpdateHandler)
+	b.RegisterHandlerMatchFunc(merchant.SuccessfullPaymentMatch, merchant.SuccessfullPaymentHandler)
 	b.RegisterHandlerMatchFunc(merchant.MemberKickedMatch, merchant.MemberKickedHandler)
 	b.RegisterHandlerMatchFunc(merchant.MemberRestoredMatch, merchant.MemberRestoredHandler)
 
