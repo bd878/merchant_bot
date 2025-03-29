@@ -1,10 +1,12 @@
 {
 	"ru": {
 		"test": "абв",
-		"transactions": "Транзакции"
+		"transactions": "Транзакции",
+		"terms": "Условия использования бота"
 	},
 	"en": {
 		"test": "abc",
-		"transactions": "Transactions"
+		"transactions": "Transactions",
+		"terms": "Terms conditions"
 	}
 }

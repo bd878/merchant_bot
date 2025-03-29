@@ -12,14 +12,17 @@ var (
 )
 
 func StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	b.SendMessage(ctx, &bot.SendMessageParams{
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: "ok",
 	})
+	if err != nil {
+		log.Errorw("send message returns error", "error", err)
+	}
 }
 
 func InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	b.SendInvoice(ctx, &bot.SendInvoiceParams{
+	_, err := b.SendInvoice(ctx, &bot.SendInvoiceParams{
 		ChatID: update.Message.Chat.ID,
 		Title: "Test gift",
 		Description: "Test gift description",
@@ -27,17 +30,28 @@ func InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 		Prices: []models.LabeledPrice{models.LabeledPrice{Label: xtr, Amount: 10}},
 		Currency: xtr,
 	})
+	if err != nil {
+		log.Errorw("send invoice returns error", "error", err)
+	}
 }
 
 func PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	b.AnswerPreCheckoutQuery(ctx, &bot.AnswerPreCheckoutQueryParams{
+	ok, err := b.AnswerPreCheckoutQuery(ctx, &bot.AnswerPreCheckoutQueryParams{
 		PreCheckoutQueryID: update.PreCheckoutQuery.ID,
 		OK: true,
 	})
+	if err != nil {
+		log.Errorw("failed to ansewer pre checkout query", "error", err)
+	}
+	if ok {
+		log.Infoln("pre checkout query ok")
+	} else {
+		log.Warnln("pre checkout query is NOT ok")
+	}
 }
 
 func SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	log.Info(update.Message.SuccessfulPayment.TelegramPaymentChargeID)
+	log.Info("payment success", update.Message.SuccessfulPayment.TelegramPaymentChargeID)
 }
 
 func MemberKickedHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
@@ -50,6 +64,13 @@ func MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *models.Updat
 
 // IMPORTANT for turn backs: https://core.telegram.org/bots/payments-stars#live-checklist
 func TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: LangRu.Text("terms"),
+	})
+	if err != nil {
+		log.Errorw("failed to send terms", "error", err)
+	}
 }
 
 func ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
@@ -61,9 +82,13 @@ func ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
 		log.Errorw("failed to get star transactions", "error", err)
 		return
 	}
-	b.SendMessage(ctx, &bot.SendMessageParams{
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: LangRu.Text("transactions"),
 		ReplyMarkup: TransactionsKeyboard(LangRu, transactions),
 	})
+	if err != nil {
+		log.Errorw("failed to send transactions", "error", err)
+	}
 }
