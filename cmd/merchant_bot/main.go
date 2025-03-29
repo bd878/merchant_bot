@@ -27,6 +27,7 @@ func main() {
 
 	opts := []bot.Option{
 		bot.WithDefaultHandler(defaultHandler),
+		bot.WithDebug(),
 	}
 
 	b, err := bot.New(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"), opts...)
