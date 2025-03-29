@@ -49,6 +49,10 @@ func main() {
 	b.RegisterHandlerMatchFunc(merchant.MemberKickedMatch, merchant.MemberKickedHandler)
 	b.RegisterHandlerMatchFunc(merchant.MemberRestoredMatch, merchant.MemberRestoredHandler)
 
+	ctx, cancelWebhook := context.WithCancel(context.Background())
+	go b.StartWebhook(ctx)
+	defer cancelWebhook()
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go httpServer.Run(&wg)
