@@ -53,8 +53,17 @@ func TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 }
 
 func ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
-	b.GetStarTransactions(ctx, &bot.GetStarTransactionsParams{
+	transactions, err := b.GetStarTransactions(ctx, &bot.GetStarTransactionsParams{
 		Offset: 0,
 		Limit: 50,
+	})
+	if err != nil {
+		log.Errorw("failed to get star transactions", "error", err)
+		return
+	}
+	b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: LangRu.Text("transactions"),
+		ReplyMarkup: TransactionsKeyboard(LangRu, transactions),
 	})
 }

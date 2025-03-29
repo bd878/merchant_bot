@@ -1,8 +1,10 @@
 {
 	"ru": {
-		"test": "абв"
+		"test": "абв",
+		"transactions": "Транзакции"
 	},
 	"en": {
-		"test": "abc"
+		"test": "abc",
+		"transactions": "Transactions"
 	}
 }
