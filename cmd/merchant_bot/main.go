@@ -45,6 +45,7 @@ func main() {
 	httpServer := merchant.NewHTTPServer(conf.Addr, conf.WebhookPath, b.WebhookHandler())
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, merchant.StartHandler)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/invoice", bot.MatchTypeExact, merchant.InvoiceHandler)
 
 	b.RegisterHandlerMatchFunc(merchant.MemberKickedMatch, merchant.MemberKickedHandler)
 	b.RegisterHandlerMatchFunc(merchant.MemberRestoredMatch, merchant.MemberRestoredHandler)

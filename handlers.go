@@ -6,10 +6,26 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
+var (
+	xtr string = "XTR"
+	invoice_payload string = "invoice payload"
+)
+
 func StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: "ok",
+	})
+}
+
+func InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	b.SendInvoice(ctx, &bot.SendInvoiceParams{
+		ChatID: update.Message.Chat.ID,
+		Title: "Test gift",
+		Description: "Test gift description",
+		Payload: invoice_payload,
+		Prices: []models.LabeledPrice{models.LabeledPrice{Label: xtr, Amount: 10}},
+		Currency: xtr,
 	})
 }
 
