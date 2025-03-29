@@ -4,6 +4,6 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-func TransactionsKeyboard(text TextHandler, transactions *models.StarTransactions) *models.InlineKeyboardMarkup {
+func TransactionsKeyboard(code LangCode, transactions *models.StarTransactions) *models.InlineKeyboardMarkup {
 	return nil
 }
