@@ -2,24 +2,28 @@ package merchant_bot
 
 import "go.uber.org/zap"
 
-var log *zap.SugaredLogger = (*zap.SugaredLogger)(nil)
+type Logger struct {
+	*zap.SugaredLogger
+}
+
+var log *Logger = (*Logger)(nil)
 
 func init() {
 	log = NewProduction()
 }
 
-func NewProduction(options ...zap.Option) *zap.SugaredLogger {
+func NewProduction(options ...zap.Option) *Logger {
 	config := zap.NewProductionConfig()
 	config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-	return zap.Must(config.Build(options...)).Sugar()
+	return &Logger{zap.Must(config.Build(options...)).Sugar()}
 }
 
-func NewDevelopment(options ...zap.Option) *zap.SugaredLogger {
+func NewDevelopment(options ...zap.Option) *Logger {
 	config := zap.NewDevelopmentConfig()
 	config.Level = zap.NewAtomicLevelAt(zap.DebugLevel)
-	return zap.Must(config.Build(options...)).Sugar()
+	return &Logger{zap.Must(config.Build(options...)).Sugar()}
 }
 
-func Log() *zap.SugaredLogger {
+func NewLog() *Logger {
 	return log
 }

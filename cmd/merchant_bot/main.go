@@ -1,14 +1,14 @@
 package main
 
 import (
-	"os/signal"
+	"database/sql"
 	"os"
 	"sync"
 	"fmt"
-	"context"
 
+	_ "github.com/jackc/pgx/v4/stdlib"
 	"github.com/go-telegram/bot"
-	"github.com/go-telegram/bot/models"
+
 	merchant "github.com/bd878/merchant_bot"
 )
 
@@ -19,61 +19,33 @@ func main() {
 		os.Exit(1)
 	}
 
-	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
-	defer cancel()
-	defer merchant.Log().Sync()
+	m := app{}
 
-	conf := merchant.LoadConfig(configPath)
+	m.conf = merchant.LoadConfig(configPath)
+	m.log = merchant.NewLog()
+	defer m.log.Sync()
 
-	opts := []bot.Option{
-		bot.WithDefaultHandler(defaultHandler),
-		bot.WithDebug(),
-	}
+	m.bot = merchant.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
+		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
+		bot.WithDebug())
 
-	b, err := bot.New(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"), opts...)
+	db, err := sql.Open("pgx", m.conf.PGConn)
 	if err != nil {
-		merchant.Log().Fatalw("cannot create bot", "error", err)
+		panic(err)
 	}
+	defer func(db *sql.DB) {
+		err := db.Close()
+		if err != nil {
+			return
+		}
+	}(db)
 
-	merchant.SetBot(b)
-
-	b.SetWebhook(ctx, &bot.SetWebhookParams{
-		URL:      conf.WebhookURL + conf.WebhookPath,
-		SecretToken: os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"),
-	})
-
-	httpServer := merchant.NewHTTPServer(conf.Addr, conf.WebhookPath, b.WebhookHandler())
-
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, merchant.StartHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/invoice", bot.MatchTypeExact, merchant.InvoiceHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/transactions", bot.MatchTypeExact, merchant.ShowTransactions)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/terms", bot.MatchTypeExact, merchant.TermsHandler)
-
-	// TODO: receive inline invoices
-
-	b.RegisterHandlerMatchFunc(merchant.PreCheckoutUpdateMatch, merchant.PreCheckoutUpdateHandler)
-	b.RegisterHandlerMatchFunc(merchant.SuccessfullPaymentMatch, merchant.SuccessfullPaymentHandler)
-	b.RegisterHandlerMatchFunc(merchant.MemberKickedMatch, merchant.MemberKickedHandler)
-	b.RegisterHandlerMatchFunc(merchant.MemberRestoredMatch, merchant.MemberRestoredHandler)
-
-	ctx, cancelWebhook := context.WithCancel(context.Background())
-	go b.StartWebhook(ctx)
-	defer cancelWebhook()
+	m.repo = merchant.NewRepo("marchandise", db)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
-	go httpServer.Run(&wg)
+	go m.waitForWebhook(&wg)
+	wg.Add(1)
+	go m.waitForWeb(&wg)
 	wg.Wait()
-}
-
-func defaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	if update.Message == nil {
-		merchant.Log().Errorln("message is nil, exit")
-		return
-	}
-
-	b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: update.Message.Chat.ID,
-		Text:   "pong",
-	})
 }
