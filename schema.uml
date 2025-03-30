@@ -1,0 +1,23 @@
+@startuml
+!procedure table($x)
+entity $x << (T, white) >>
+!endprocedure
+
+!procedure primary_key($x)
+<b><color:#b8861b><&key></color> $x</b>
+!endprocedure
+
+!procedure column($x)
+<color:#efefef><&media-record></color> $x
+!endprocedure
+
+!procedure foreign_key($x)
+<color:#efefef><&media-record></color> $x
+!endprocedure
+
+table("users") {
+	primary_key(id): UUID <<PK>>
+	--
+	column(created_at): DATETIME
+}
+@enduml
