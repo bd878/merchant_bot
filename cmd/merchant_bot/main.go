@@ -42,6 +42,14 @@ func main() {
 
 	m.repo = merchant.NewRepo("marchandise", db)
 
+	m.modules = []merchant.Module{
+		&merchant.ClientsModule{},
+	}
+
+	if err := m.startupModules(); err != nil {
+		panic(err)
+	}
+
 	var wg sync.WaitGroup
 	wg.Add(1)
 	go m.waitForWebhook(&wg)

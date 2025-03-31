@@ -28,18 +28,6 @@ func NewBot(token, webhookToken, webhookURL string, opts ...bot.Option) *Bot {
 		SecretToken: webhookToken,
 	})
 
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, StartHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/invoice", bot.MatchTypeExact, InvoiceHandler)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/transactions", bot.MatchTypeExact, ShowTransactions)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/terms", bot.MatchTypeExact, TermsHandler)
-
-	// TODO: receive inline invoices
-
-	b.RegisterHandlerMatchFunc(PreCheckoutUpdateMatch, PreCheckoutUpdateHandler)
-	b.RegisterHandlerMatchFunc(SuccessfullPaymentMatch, SuccessfullPaymentHandler)
-	b.RegisterHandlerMatchFunc(MemberKickedMatch, MemberKickedHandler)
-	b.RegisterHandlerMatchFunc(MemberRestoredMatch, MemberRestoredHandler)
-
 	return b
 }
 
