@@ -10,7 +10,7 @@ CREATE SCHEMA IF NOT EXISTS chat;
 
 CREATE TABLE IF NOT EXISTS chat.chat
 (
-	id text NOT NULL,
+	id integer NOT NULL,
 	type text NOT NULL,
 	title text NOT NULL,
 	username text NOT NULL,

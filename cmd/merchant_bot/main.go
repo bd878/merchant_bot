@@ -1,12 +1,12 @@
 package main
 
 import (
-	"database/sql"
+	"context"
 	"os"
 	"sync"
 	"fmt"
 
-	_ "github.com/jackc/pgx/v4/stdlib"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/go-telegram/bot"
 
 	merchant "github.com/bd878/merchant_bot"
@@ -29,18 +29,13 @@ func main() {
 		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
 		bot.WithDebug())
 
-	db, err := sql.Open("pgx", m.conf.PGConn)
+	pool, err := pgxpool.New(context.Background(), m.conf.PGConn)
 	if err != nil {
 		panic(err)
 	}
-	defer func(db *sql.DB) {
-		err := db.Close()
-		if err != nil {
-			return
-		}
-	}(db)
+	defer pool.Close()
 
-	m.repo = merchant.NewRepository("marchandise", db)
+	m.repo = merchant.NewRepository("marchandise.chat.chat", pool)
 	m.chats = merchant.NewChats()
 
 	m.modules = []merchant.Module{

@@ -2,7 +2,7 @@ package merchant_bot
 
 import (
 	"context"
-	"database/sql"
+	"github.com/jackc/pgx/v5"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 )
@@ -17,7 +17,7 @@ func (m ClientsModule) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc 
 				var err error
 				chat, err = m.app.Repo().Find(ctx, update.Message.Chat.ID)
 				if err != nil {
-					if err == sql.ErrNoRows {
+					if err == pgx.ErrNoRows {
 						err = m.app.Repo().Save(ctx, &update.Message.Chat)
 						if err != nil {
 							log.Errorw("failed to save chat", "chat_id", update.Message.Chat.ID, "error", err)
