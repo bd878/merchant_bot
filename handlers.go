@@ -11,7 +11,7 @@ var (
 	invoice_payload string = "invoice payload"
 )
 
-func (m *ClientsModule) StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: "ok",
@@ -21,7 +21,7 @@ func (m *ClientsModule) StartHandler(ctx context.Context, b *bot.Bot, update *mo
 	}
 }
 
-func (m *ClientsModule) InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.SendInvoice(ctx, &bot.SendInvoiceParams{
 		ChatID: update.Message.Chat.ID,
 		Title: "Test gift",
@@ -35,7 +35,7 @@ func (m *ClientsModule) InvoiceHandler(ctx context.Context, b *bot.Bot, update *
 	}
 }
 
-func (m *ClientsModule) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	ok, err := b.AnswerPreCheckoutQuery(ctx, &bot.AnswerPreCheckoutQueryParams{
 		PreCheckoutQueryID: update.PreCheckoutQuery.ID,
 		OK: true,
@@ -50,20 +50,20 @@ func (m *ClientsModule) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot
 	}
 }
 
-func (m *ClientsModule) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	log.Info("payment success", update.Message.SuccessfulPayment.TelegramPaymentChargeID)
 }
 
-func (m *ClientsModule) MemberKickedHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) MemberKickedHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	log.Infow("kicked", "chat_id", update.Message.Chat.ID)
 }
 
-func (m *ClientsModule) MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	log.Infow("restored", "chat_id", update.Message.Chat.ID)
 }
 
 // IMPORTANT for turn backs: https://core.telegram.org/bots/payments-stars#live-checklist
-func (m *ClientsModule) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: LangRu.Text("terms"),
@@ -73,7 +73,7 @@ func (m *ClientsModule) TermsHandler(ctx context.Context, b *bot.Bot, update *mo
 	}
 }
 
-func (m *ClientsModule) ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
+func (m ClientsModule) ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
 	transactions, err := b.GetStarTransactions(ctx, &bot.GetStarTransactionsParams{
 		Offset: 0,
 		Limit: 50,

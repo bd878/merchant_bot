@@ -6,18 +6,17 @@ import (
 )
 
 type Chats struct {
-	mu *sync.Mutex
+	mu sync.Mutex
 	dict map[int64]*models.Chat
 }
 
 func NewChats() *Chats {
 	return &Chats{
-		mu: &sync.Mutex{},
 		dict: make(map[int64]*models.Chat, 0),
 	}
 }
 
-func (c *Chats) Get(id int64) (*models.Chat, bool) {
+func (c Chats) Get(id int64) (*models.Chat, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	chat, ok := c.dict[id]

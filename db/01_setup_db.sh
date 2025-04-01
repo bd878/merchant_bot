@@ -7,7 +7,7 @@ postgres_db=${2?"Usage: user postgres_db"}
 printf "Setup with params username=%s postgres_db=%s\n" $username $postgres_db
 
 psql --username "$username" --dbname "$postgres_db" <<-EOSQL
-CREATE DATABASE IF NOT EXISTS marchandise;
+CREATE DATABASE marchandise;
 
 CREATE USER merchant WITH ENCRYPTED PASSWORD 'e02960b5e1019acb079a1ae860b27c83';
 

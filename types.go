@@ -5,7 +5,7 @@ import (
 )
 
 type Monolith interface {
-	Repo() *Repo
+	Repo() *Repository
 	Bot() *Bot
 	Log() *Logger
 	Config() Config

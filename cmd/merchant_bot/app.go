@@ -9,7 +9,7 @@ import (
 
 type app struct {
 	conf   merchant.Config
-	repo  *merchant.Repo
+	repo  *merchant.Repository
 	chats *merchant.Chats
 	bot   *merchant.Bot
 	log   *merchant.Logger
@@ -20,7 +20,7 @@ func (a *app) Config() merchant.Config {
 	return a.conf
 }
 
-func (a *app) Repo() *merchant.Repo {
+func (a *app) Repo() *merchant.Repository {
 	return a.repo
 }
 

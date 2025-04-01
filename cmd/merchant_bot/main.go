@@ -40,7 +40,8 @@ func main() {
 		}
 	}(db)
 
-	m.repo = merchant.NewRepo("marchandise", db)
+	m.repo = merchant.NewRepository("marchandise", db)
+	m.chats = merchant.NewChats()
 
 	m.modules = []merchant.Module{
 		&merchant.ClientsModule{},
