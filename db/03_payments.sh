@@ -23,6 +23,6 @@ CREATE TABLE IF NOT EXISTS payments.payments
 
 CREATE TRIGGER created_at_payments_trgr BEFORE UPDATE ON payments.payments FOR EACH ROW EXECUTE PROCEDURE created_at_trigger();
 
-GRANT USAGE ON SCHEMA chat TO merchant;
-GRANT INSERT, UPDATE, DELETE, SELECT ON ALL TABLES IN SCHEMA chat TO merchant;
+GRANT USAGE ON SCHEMA payments TO merchant;
+GRANT INSERT, UPDATE, DELETE, SELECT ON ALL TABLES IN SCHEMA payments TO merchant;
 EOSQL
