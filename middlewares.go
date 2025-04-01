@@ -2,6 +2,7 @@ package merchant_bot
 
 import (
 	"context"
+
 	"github.com/jackc/pgx/v5"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
@@ -15,10 +16,10 @@ func (m ClientsModule) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc 
 			chat, ok := m.app.Chats().Get(update.Message.Chat.ID)
 			if !ok {
 				var err error
-				chat, err = m.app.Repo().Find(ctx, update.Message.Chat.ID)
+				chat, err = m.app.Repo().FindChat(ctx, update.Message.Chat.ID)
 				if err != nil {
 					if err == pgx.ErrNoRows {
-						err = m.app.Repo().Save(ctx, &update.Message.Chat)
+						err = m.app.Repo().SaveChat(ctx, &update.Message.Chat)
 						if err != nil {
 							log.Errorw("failed to save chat", "chat_id", update.Message.Chat.ID, "error", err)
 							return
@@ -35,5 +36,15 @@ func (m ClientsModule) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc 
 			ctx = context.WithValue(ctx, &chatKey{}, chat)
 		}
 		h(ctx, bot, update)
+	}
+}
+
+func (m ClientsModule) HasUserMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
+	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
+		if update.Message != nil && update.Message.From != nil {
+			h(ctx, bot, update)
+		} else {
+			log.Error("message.from is not given")
+		}
 	}
 }

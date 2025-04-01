@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	merchant "github.com/bd878/merchant_bot/models"
 )
 
 var (
@@ -41,7 +42,7 @@ func (m ClientsModule) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot,
 		OK: true,
 	})
 	if err != nil {
-		log.Errorw("failed to ansewer pre checkout query", "error", err)
+		log.Errorw("failed to answer pre checkout query", "error", err)
 	}
 	if ok {
 		log.Infoln("pre checkout query ok")
@@ -51,7 +52,13 @@ func (m ClientsModule) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot,
 }
 
 func (m ClientsModule) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	log.Info("payment success", update.Message.SuccessfulPayment.TelegramPaymentChargeID)
+	err := m.app.Repo().SavePayment(ctx, &merchant.Payment{
+		SuccessfulPayment: update.Message.SuccessfulPayment,
+		UserID: update.Message.From.ID,
+	})
+	if err != nil {
+		log.Errorw("failed to save successfull payment", "error", err)
+	}
 }
 
 func (m ClientsModule) MemberKickedHandler(ctx context.Context, b *bot.Bot, update *models.Update) {

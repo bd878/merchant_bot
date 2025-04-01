@@ -5,6 +5,7 @@ import (
 	"context"
 
 	"github.com/go-telegram/bot/models"
+	merchant "github.com/bd878/merchant_bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -20,7 +21,7 @@ func NewRepository(tableName string, pool *pgxpool.Pool) *Repository {
 	}
 }
 
-func (r Repository) Find(ctx context.Context, chatID int64) (*models.Chat, error) {
+func (r Repository) FindChat(ctx context.Context, chatID int64) (*models.Chat, error) {
 	const query = "SELECT type, title, username, first_name, last_name, is_forum FROM %s WHERE id = $1 LIMIT 1"
 
 	chat := &models.Chat{
@@ -40,12 +41,49 @@ func (r Repository) Find(ctx context.Context, chatID int64) (*models.Chat, error
 	return chat, nil
 }
 
-func (r Repository) Save(ctx context.Context, chat *models.Chat) error {
+func (r Repository) SaveChat(ctx context.Context, chat *models.Chat) error {
 	const query = "INSERT INTO %s (id, type, title, username, first_name, last_name, is_forum) VALUES ($1, $2, $3, $4, $5, $6, $7)"
 
 	_, err := r.pool.Exec(ctx, r.table(query), chat.ID, chat.Type, chat.Title, chat.Username, chat.FirstName, chat.LastName, chat.IsForum)
 
 	return err
+}
+
+func (r Repository) SavePayment(ctx context.Context, payment *merchant.Payment) error {
+	const query = `
+INSERT INTO %s (user_id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount)
+VALUES ($1,$2,$3,$4,$5,$6,$7)
+`
+
+	_, err := r.pool.Exec(ctx, r.table(query), payment.UserID, payment.Refunded, payment.TelegramPaymentChargeID,
+		payment.ProviderPaymentChargeID, payment.InvoicePayload, payment.Currency, payment.TotalAmount)
+
+	return err
+}
+
+func (r Repository) RefundPayment(ctx context.Context, paymentChargeID string) error {
+	return nil
+}
+
+func (r Repository) FindPayment(ctx context.Context, paymentChargeID string) (*merchant.Payment, error) {
+	const query = `
+SELECT user_id, refunded, provider_payment_charge_id, invoice_payload, currency, total_amount
+FROM %s WHERE telegram_payment_charge_id = $1 LIMIT 1
+	`
+
+	payment := &merchant.Payment{
+		SuccessfulPayment: &models.SuccessfulPayment{
+			TelegramPaymentChargeID: paymentChargeID,
+		},
+	}
+
+	err := r.pool.QueryRow(ctx, r.table(query), paymentChargeID).Scan(&payment.UserID, &payment.Refunded, &payment.ProviderPaymentChargeID,
+		&payment.InvoicePayload, &payment.Currency, &payment.TotalAmount)
+	if err != nil {
+		return nil, err
+	}
+
+	return payment, nil
 }
 
 func (r Repository) table(query string) string {

@@ -20,7 +20,7 @@ func (m *ClientsModule) Startup(ctx context.Context, app Monolith) error {
 	// TODO: receive inline invoices
 
 	app.Bot().RegisterHandlerMatchFunc(PreCheckoutUpdateMatch, m.PreCheckoutUpdateHandler)
-	app.Bot().RegisterHandlerMatchFunc(SuccessfullPaymentMatch, m.SuccessfullPaymentHandler)
+	app.Bot().RegisterHandlerMatchFunc(SuccessfullPaymentMatch, m.SuccessfullPaymentHandler, m.HasUserMiddleware)
 	app.Bot().RegisterHandlerMatchFunc(MemberKickedMatch, m.MemberKickedHandler)
 	app.Bot().RegisterHandlerMatchFunc(MemberRestoredMatch, m.MemberRestoredHandler)
 
