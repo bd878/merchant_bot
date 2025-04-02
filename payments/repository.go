@@ -23,11 +23,11 @@ func NewRepository(tableName string, pool *pgxpool.Pool) *Repository {
 
 func (r Repository) SavePayment(ctx context.Context, payment *merchant.Payment) error {
 	const query = `
-INSERT INTO %s (user_id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount)
-VALUES ($1,$2,$3,$4,$5,$6,$7)
+INSERT INTO %s (id, user_id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount)
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 `
 
-	_, err := r.pool.Exec(ctx, r.table(query), payment.UserID, payment.Refunded, payment.TelegramPaymentChargeID,
+	_, err := r.pool.Exec(ctx, r.table(query), payment.ID, payment.UserID, payment.Refunded, payment.TelegramPaymentChargeID,
 		payment.ProviderPaymentChargeID, payment.InvoicePayload, payment.Currency, payment.TotalAmount)
 
 	return err
@@ -39,7 +39,7 @@ func (r Repository) RefundPayment(ctx context.Context, paymentChargeID string) e
 
 func (r Repository) FindPayment(ctx context.Context, paymentChargeID string) (*merchant.Payment, error) {
 	const query = `
-SELECT user_id, refunded, provider_payment_charge_id, invoice_payload, currency, total_amount
+SELECT id, user_id, refunded, provider_payment_charge_id, invoice_payload, currency, total_amount
 FROM %s WHERE telegram_payment_charge_id = $1 LIMIT 1
 	`
 
@@ -49,7 +49,7 @@ FROM %s WHERE telegram_payment_charge_id = $1 LIMIT 1
 		},
 	}
 
-	err := r.pool.QueryRow(ctx, r.table(query), paymentChargeID).Scan(&payment.UserID, &payment.Refunded, &payment.ProviderPaymentChargeID,
+	err := r.pool.QueryRow(ctx, r.table(query), paymentChargeID).Scan(&payment.ID, &payment.UserID, &payment.Refunded, &payment.ProviderPaymentChargeID,
 		&payment.InvoicePayload, &payment.Currency, &payment.TotalAmount)
 	if err != nil {
 		return nil, err

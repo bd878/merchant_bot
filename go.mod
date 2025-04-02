@@ -4,6 +4,7 @@ go 1.24.0
 
 require (
 	github.com/go-telegram/bot v1.14.1 // indirect
+	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.14.3 // indirect
 	github.com/jackc/pgio v1.0.0 // indirect

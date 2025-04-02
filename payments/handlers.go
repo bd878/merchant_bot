@@ -1,8 +1,8 @@
 package payments
 
 import (
-	"fmt"
 	"context"
+	"github.com/google/uuid"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	merchant "github.com/bd878/merchant_bot"
@@ -44,10 +44,14 @@ func (m Module) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update
 }
 
 func (m Module) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	id := uuid.New().ID()
+
 	err := m.repo.SavePayment(ctx, &merchantModels.Payment{
 		SuccessfulPayment: update.Message.SuccessfulPayment,
+		ID: id,
 		UserID: update.Message.From.ID,
 	})
+
 	if err != nil {
 		m.log.Errorw("failed to save successfull payment", "error", err)
 	}
@@ -70,18 +74,5 @@ func (m Module) ShowTransactions(ctx context.Context, b *bot.Bot, update *models
 	})
 	if err != nil {
 		m.log.Errorw("failed to send transactions", "error", err)
-	}
-}
-
-
-func TransactionsKeyboard(code merchant.LangCode, trans *models.StarTransactions) *models.InlineKeyboardMarkup {
-	keyboards := make([][]models.InlineKeyboardButton, 0)
-	for _, tr := range trans.Transactions {
-		keyboards = append(keyboards, []models.InlineKeyboardButton{
-			{Text: fmt.Sprintf("%d - %d", tr.Amount, tr.Date), CallbackData: "trans"},
-		})
-	}
-	return &models.InlineKeyboardMarkup{
-		InlineKeyboard: keyboards,
 	}
 }

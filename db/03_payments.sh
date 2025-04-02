@@ -10,6 +10,7 @@ CREATE SCHEMA IF NOT EXISTS payments;
 
 CREATE TABLE IF NOT EXISTS payments.payments
 (
+	id integer NOT NULL,
 	user_id integer NOT NULL,
 	refunded bool NOT NULL,
 	telegram_payment_charge_id text NOT NULL,
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS payments.payments
 	currency text NOT NULL,
 	total_amount integer NOT NULL,
 	created_at timestamptz NOT NULL DEFAULT NOW(),
-	PRIMARY KEY (telegram_payment_charge_id)
+	PRIMARY KEY (id)
 );
 
 CREATE TRIGGER created_at_payments_trgr BEFORE UPDATE ON payments.payments FOR EACH ROW EXECUTE PROCEDURE created_at_trigger();
