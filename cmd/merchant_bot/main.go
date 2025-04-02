@@ -10,6 +10,8 @@ import (
 	"github.com/go-telegram/bot"
 
 	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/clients"
+	"github.com/bd878/merchant_bot/payments"
 )
 
 func main() {
@@ -29,17 +31,18 @@ func main() {
 		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
 		bot.WithDebug())
 
-	pool, err := pgxpool.New(context.Background(), m.conf.PGConn)
+	var err error
+	m.pool, err = pgxpool.New(context.Background(), m.conf.PGConn)
 	if err != nil {
 		panic(err)
 	}
-	defer pool.Close()
+	defer m.pool.Close()
 
-	m.repo = merchant.NewRepository("marchandise.chat.chat", pool)
 	m.chats = merchant.NewChats()
 
 	m.modules = []merchant.Module{
-		&merchant.ClientsModule{},
+		&clients.Module{},
+		&payments.Module{},
 	}
 
 	if err := m.startupModules(); err != nil {

@@ -4,12 +4,13 @@ import (
 	"sync"
 	"context"
 	"net/http"
+	"github.com/jackc/pgx/v5/pgxpool"
 	merchant "github.com/bd878/merchant_bot"
 )
 
 type app struct {
 	conf   merchant.Config
-	repo  *merchant.Repository
+	pool  *pgxpool.Pool
 	chats *merchant.Chats
 	bot   *merchant.Bot
 	log   *merchant.Logger
@@ -20,8 +21,8 @@ func (a *app) Config() merchant.Config {
 	return a.conf
 }
 
-func (a *app) Repo() *merchant.Repository {
-	return a.repo
+func (a *app) Pool() *pgxpool.Pool {
+	return a.pool
 }
 
 func (a *app) Bot() *merchant.Bot {

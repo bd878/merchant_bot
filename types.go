@@ -2,10 +2,11 @@ package merchant_bot
 
 import (
 	"context"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 type Monolith interface {
-	Repo() *Repository
+	Pool() *pgxpool.Pool
 	Bot() *Bot
 	Log() *Logger
 	Config() Config
