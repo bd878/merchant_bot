@@ -33,10 +33,10 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 	return err
 }
 
-func (r Repository) RefundPayment(ctx context.Context, paymentChargeID string) error {
-	const query = `UPDATE %s SET refunded = true WHERE telegram_payment_charge_id = $1`
+func (r Repository) RefundPayment(ctx context.Context, id uint32) error {
+	const query = `UPDATE %s SET refunded = true WHERE id = $1`
 
-	_, err := r.pool.Exec(ctx, r.table(query), paymentChargeID)
+	_, err := r.pool.Exec(ctx, r.table(query), id)
 
 	return err
 }

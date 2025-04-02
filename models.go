@@ -1,6 +1,7 @@
 package merchant_bot
 
 import (
+	"time"
 	"github.com/go-telegram/bot/models"
 )
 
@@ -9,7 +10,7 @@ type Payment struct {
 	ID uint32
 	UserID int64
 	Refunded bool
-	CreatedAt int64
+	CreatedAt time.Time
 }
 
 type Chat struct {

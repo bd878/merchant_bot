@@ -17,3 +17,13 @@ func TransactionsKeyboard(code merchant.LangCode, transactions []*merchant.Payme
 		InlineKeyboard: keyboards,
 	}
 }
+
+func RefundKeyboard(code merchant.LangCode, trID uint32) *models.InlineKeyboardMarkup {
+	return &models.InlineKeyboardMarkup{
+		InlineKeyboard: [][]models.InlineKeyboardButton{
+			{
+				{Text: code.Text("refund"), CallbackData: fmt.Sprintf("refund:%d", trID)},
+			},
+		},
+	}
+}

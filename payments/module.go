@@ -19,7 +19,8 @@ func (m *Module) Startup(ctx context.Context, app merchant.Monolith) error {
 	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/invoice", bot.MatchTypeExact, m.InvoiceHandler)
 	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/transactions", bot.MatchTypeExact, m.ShowTransactions, merchant.HasUserMiddleware)
 
-	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "tr:", bot.MatchTypePrefix, m.ShowTransactionHandler)
+	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "tr:", bot.MatchTypePrefix, m.ShowTransactionHandler, merchant.AnswerCallbackQueryMiddleware, m.GetTransactionIDMiddleware)
+	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "refund:", bot.MatchTypePrefix, m.RefundTransactionhandler, merchant.AnswerCallbackQueryMiddleware, m.GetTransactionIDMiddleware)
 	app.Bot().RegisterHandlerMatchFunc(PreCheckoutUpdateMatch, m.PreCheckoutUpdateHandler)
 	app.Bot().RegisterHandlerMatchFunc(SuccessfullPaymentMatch, m.SuccessfullPaymentHandler, merchant.HasUserMiddleware)
 

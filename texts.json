@@ -3,12 +3,18 @@
 		"test": "абв",
 		"transactions": "Транзакции",
 		"terms": "Условия использования бота",
-		"amount": "Сумма"
+		"amount": "Сумма",
+		"refund": "Выполнить возврат",
+		"refunded": "Выполнен возврат",
+		"refunded_success": "Возврат выполнен на ваш баланс"
 	},
 	"en": {
 		"test": "abc",
 		"transactions": "Transactions",
 		"terms": "Terms conditions",
-		"amount": "Amount"
+		"amount": "Amount",
+		"refund": "Refund",
+		"refunded": "Refunded",
+		"refunded_success": "Refunded successfully on your balance"
 	}
 }

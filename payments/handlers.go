@@ -28,23 +28,76 @@ func (m Module) InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.U
 	}
 }
 
-func (m Module) ShowTransactionHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	id, ok := ctx.Value(&idKey{}).(uint32)
+func (m Module) RefundTransactionhandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	id, ok := ctx.Value(&idKey{}).(int)
 	if !ok {
 		m.log.Errorw("no id key", "id", id)
 		return
 	}
 
-	payment, err := m.repo.FindPayment(ctx, id)
+	err := m.repo.RefundPayment(ctx, uint32(id))
 	if err != nil {
-		m.log.Errorw("cannot find transaction", "id", id, "error", err)
+		m.log.Errorw("failed to make a refund", "id", id, "error", err)
+		return
+	}
+
+	payment, err := m.repo.FindPayment(ctx, uint32(id))
+	if err != nil {
+		m.log.Errorw("failed to find payment after refund", "id", id, "error", err)
+		return
+	}
+
+	ok, err = b.RefundStarPayment(ctx, &bot.RefundStarPaymentParams{
+		UserID: payment.UserID,
+		TelegramPaymentChargeID: payment.TelegramPaymentChargeID,
+	})
+	if err != nil {
+		m.log.Errorw("tg failed to refund star payment", "user_id", payment.UserID, "payment_id", payment.ID, "error", err)
+		return
+	}
+
+	if !ok {
+		m.log.Errorw("tg refund was not successful", "user_id", payment.UserID, "payment_id", payment.ID)
 		return
 	}
 
 	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: payment.UserID,
-		Text: fmt.Sprintf("%d", payment.TotalAmount),
+		Text: fmt.Sprintf("%s", merchant.LangRu.Text("refunded_success")),
 	})
+	if err != nil {
+		m.log.Errorw("failed to send refund message", "id", id, "error", err)
+		return
+	}
+}
+
+func (m Module) ShowTransactionHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	id, ok := ctx.Value(&idKey{}).(int)
+	m.log.Debugw("transaction handler id", "id", id)
+	if !ok {
+		m.log.Errorw("no id key", "id", id)
+		return
+	}
+
+	payment, err := m.repo.FindPayment(ctx, uint32(id))
+	if err != nil {
+		m.log.Errorw("cannot find transaction", "id", id, "error", err)
+		return
+	}
+
+	if payment.Refunded {
+		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: payment.UserID,
+			Text: fmt.Sprintf("%d\n%s", payment.TotalAmount, merchant.LangRu.Text("refunded")),
+		})
+	} else {
+		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: payment.UserID,
+			Text: fmt.Sprintf("%d", payment.TotalAmount),
+			ReplyMarkup: RefundKeyboard(merchant.LangRu, payment.ID),
+		})
+	}
+
 	if err != nil {
 		m.log.Errorw("failed to send message", "id", id, "error", err)
 		return

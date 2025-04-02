@@ -16,3 +16,15 @@ func HasUserMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 		}
 	}
 }
+
+func AnswerCallbackQueryMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
+	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
+		if update.CallbackQuery != nil {
+			b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+				CallbackQueryID: update.CallbackQuery.ID,
+				ShowAlert:       false,
+			})
+		}
+		h(ctx, b, update)
+	}
+}
