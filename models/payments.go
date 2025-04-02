@@ -7,4 +7,5 @@ type Payment struct {
 	ID uint32
 	UserID int64
 	Refunded bool
+	CreatedAt int64
 }

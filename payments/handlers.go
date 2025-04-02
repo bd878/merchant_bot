@@ -58,12 +58,9 @@ func (m Module) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, updat
 }
 
 func (m Module) ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
-	transactions, err := b.GetStarTransactions(ctx, &bot.GetStarTransactionsParams{
-		Offset: 0,
-		Limit: 50,
-	})
+	transactions, err := m.repo.ListUserTransactions(ctx, update.Message.From.ID, 10, 0)
 	if err != nil {
-		m.log.Errorw("failed to get star transactions", "error", err)
+		m.log.Errorw("failed to get user star transactions", "user_id", update.Message.From.ID, "error", err)
 		return
 	}
 

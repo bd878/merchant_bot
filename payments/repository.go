@@ -34,7 +34,47 @@ VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 }
 
 func (r Repository) RefundPayment(ctx context.Context, paymentChargeID string) error {
-	return nil
+	const query = `UPDATE %s SET refunded = true WHERE telegram_payment_charge_id = $1`
+
+	_, err := r.pool.Exec(ctx, r.table(query), paymentChargeID)
+
+	return err
+}
+
+func (r Repository) ListUserTransactions(ctx context.Context, userID int64, limit, offset int) ([]*merchant.Payment, error) {
+	const query = `
+SELECT id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount, created_at
+FROM %s WHERE user_id = $1
+ORDER BY created_at DESC
+LIMIT $2 OFFSET $3
+	`;
+
+	rows, err := r.pool.Query(ctx, r.table(query), userID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+
+	payments := make([]*merchant.Payment, 0)
+
+	for rows.Next() {
+		payment := &merchant.Payment{
+			SuccessfulPayment: &models.SuccessfulPayment{},
+			UserID: userID,
+		}
+
+		err = rows.Scan(&payment.ID, &payment.Refunded, &payment.TelegramPaymentChargeID, &payment.ProviderPaymentChargeID,
+			&payment.InvoicePayload, &payment.Currency, &payment.TotalAmount, &payment.CreatedAt)
+		if err != nil {
+			return nil, err
+		}
+
+		payments = append(payments, payment)
+	}
+	if rows.Err() != nil {
+		return nil, rows.Err()
+	}
+
+	return payments, nil
 }
 
 func (r Repository) FindPayment(ctx context.Context, paymentChargeID string) (*merchant.Payment, error) {
