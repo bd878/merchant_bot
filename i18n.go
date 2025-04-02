@@ -91,7 +91,19 @@ type LangCode string
 const (
 	LangRu LangCode = "Ru"
 	LangEn LangCode = "En"
+	LangUnknown LangCode = ""
 )
+
+func LangFromString(code string) LangCode {
+	switch code {
+	case LangRu.String():
+		return LangRu
+	case LangEn.String():
+		return LangEn
+	default:
+		return LangRu
+	}
+}
 
 func (code LangCode) String() string { return string(code) }
 

@@ -3,10 +3,11 @@ package clients
 import (
 	"context"
 	"github.com/jackc/pgx/v5"
-	"github.com/go-telegram/bot/models"
+
+	merchant "github.com/bd878/merchant_bot"
 )
 
-func (m Module) RestoreChat(ctx context.Context, chat *models.Chat) error {
+func (m Module) RestoreChat(ctx context.Context, chat *merchant.Chat) error {
 	_, ok := m.app.Chats().Get(chat.ID)
 	if !ok {
 		_, err := m.repo.FindChat(ctx, chat.ID)

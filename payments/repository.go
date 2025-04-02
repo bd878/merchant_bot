@@ -5,8 +5,8 @@ import (
 	"context"
 
 	"github.com/go-telegram/bot/models"
-	merchant "github.com/bd878/merchant_bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
+	merchant "github.com/bd878/merchant_bot"
 )
 
 type Repository struct {
@@ -77,19 +77,19 @@ LIMIT $2 OFFSET $3
 	return payments, nil
 }
 
-func (r Repository) FindPayment(ctx context.Context, paymentChargeID string) (*merchant.Payment, error) {
+func (r Repository) FindPayment(ctx context.Context, id uint32) (*merchant.Payment, error) {
 	const query = `
-SELECT id, user_id, refunded, provider_payment_charge_id, invoice_payload, currency, total_amount
-FROM %s WHERE telegram_payment_charge_id = $1 LIMIT 1
+SELECT user_id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount
+FROM %s WHERE id = $1 LIMIT 1
 	`
 
 	payment := &merchant.Payment{
+		ID: id,
 		SuccessfulPayment: &models.SuccessfulPayment{
-			TelegramPaymentChargeID: paymentChargeID,
 		},
 	}
 
-	err := r.pool.QueryRow(ctx, r.table(query), paymentChargeID).Scan(&payment.ID, &payment.UserID, &payment.Refunded, &payment.ProviderPaymentChargeID,
+	err := r.pool.QueryRow(ctx, r.table(query), id).Scan(&payment.UserID, &payment.Refunded, &payment.TelegramPaymentChargeID, &payment.ProviderPaymentChargeID,
 		&payment.InvoicePayload, &payment.Currency, &payment.TotalAmount)
 	if err != nil {
 		return nil, err

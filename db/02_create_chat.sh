@@ -11,6 +11,7 @@ CREATE SCHEMA IF NOT EXISTS chat;
 CREATE TABLE IF NOT EXISTS chat.chat
 (
 	id integer NOT NULL,
+	lang text NOT NULL,
 	type text NOT NULL,
 	title text NOT NULL,
 	username text NOT NULL,

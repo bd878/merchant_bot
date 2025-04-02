@@ -1,12 +1,12 @@
 package payments
 
 import (
+	"fmt"
 	"context"
 	"github.com/google/uuid"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	merchant "github.com/bd878/merchant_bot"
-	merchantModels "github.com/bd878/merchant_bot/models"
 )
 
 var (
@@ -28,6 +28,29 @@ func (m Module) InvoiceHandler(ctx context.Context, b *bot.Bot, update *models.U
 	}
 }
 
+func (m Module) ShowTransactionHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	id, ok := ctx.Value(&idKey{}).(uint32)
+	if !ok {
+		m.log.Errorw("no id key", "id", id)
+		return
+	}
+
+	payment, err := m.repo.FindPayment(ctx, id)
+	if err != nil {
+		m.log.Errorw("cannot find transaction", "id", id, "error", err)
+		return
+	}
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: payment.UserID,
+		Text: fmt.Sprintf("%d", payment.TotalAmount),
+	})
+	if err != nil {
+		m.log.Errorw("failed to send message", "id", id, "error", err)
+		return
+	}
+}
+
 func (m Module) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	ok, err := b.AnswerPreCheckoutQuery(ctx, &bot.AnswerPreCheckoutQueryParams{
 		PreCheckoutQueryID: update.PreCheckoutQuery.ID,
@@ -46,7 +69,7 @@ func (m Module) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update
 func (m Module) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	id := uuid.New().ID()
 
-	err := m.repo.SavePayment(ctx, &merchantModels.Payment{
+	err := m.repo.SavePayment(ctx, &merchant.Payment{
 		SuccessfulPayment: update.Message.SuccessfulPayment,
 		ID: id,
 		UserID: update.Message.From.ID,

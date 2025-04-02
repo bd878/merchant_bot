@@ -2,11 +2,13 @@
 	"ru": {
 		"test": "абв",
 		"transactions": "Транзакции",
-		"terms": "Условия использования бота"
+		"terms": "Условия использования бота",
+		"amount": "Сумма"
 	},
 	"en": {
 		"test": "abc",
 		"transactions": "Transactions",
-		"terms": "Terms conditions"
+		"terms": "Terms conditions",
+		"amount": "Amount"
 	}
 }

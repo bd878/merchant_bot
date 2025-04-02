@@ -2,21 +2,20 @@ package merchant_bot
 
 import (
 	"sync"
-	"github.com/go-telegram/bot/models"
 )
 
 type Chats struct {
 	mu sync.Mutex
-	dict map[int64]*models.Chat
+	dict map[int64]*Chat
 }
 
 func NewChats() *Chats {
 	return &Chats{
-		dict: make(map[int64]*models.Chat, 0),
+		dict: make(map[int64]*Chat, 0),
 	}
 }
 
-func (c Chats) Get(id int64) (*models.Chat, bool) {
+func (c Chats) Get(id int64) (*Chat, bool) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	chat, ok := c.dict[id]
@@ -26,7 +25,7 @@ func (c Chats) Get(id int64) (*models.Chat, bool) {
 	return chat, true
 } 
 
-func (c *Chats) Set(id int64, chat *models.Chat) {
+func (c *Chats) Set(id int64, chat *Chat) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	c.dict[id] = chat
