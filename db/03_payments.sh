@@ -10,7 +10,7 @@ CREATE SCHEMA IF NOT EXISTS payments;
 
 CREATE TABLE IF NOT EXISTS payments.payments
 (
-	id integer NOT NULL,
+	id bigint NOT NULL,
 	user_id integer NOT NULL,
 	refunded bool NOT NULL,
 	telegram_payment_charge_id text NOT NULL,
