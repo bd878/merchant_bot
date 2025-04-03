@@ -1,7 +1,7 @@
 {
 	"ru": {
 		"test": "абв",
-		"back": "назад",
+		"back": "Назад",
 		"transactions": "Транзакции",
 		"terms": "Условия использования бота",
 		"amount": "Сумма",
@@ -11,7 +11,7 @@
 	},
 	"en": {
 		"test": "abc",
-		"back": "back",
+		"back": "Back",
 		"transactions": "Transactions",
 		"terms": "Terms conditions",
 		"amount": "Amount",
