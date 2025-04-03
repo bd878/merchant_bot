@@ -11,8 +11,11 @@ type Monolith interface {
 	Log() *Logger
 	Config() Config
 	Chats() *Chats
+	History() *History
+	Modules() []Module
 }
 
 type Module interface {
 	Startup(ctx context.Context, mono Monolith) error
+	Name() string
 }

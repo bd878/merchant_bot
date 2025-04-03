@@ -38,7 +38,9 @@ func main() {
 	}
 	defer m.pool.Close()
 
+	// TODO: use grpc for inter-module communications
 	m.chats = merchant.NewChats()
+	m.history = merchant.NewHistory()
 
 	m.modules = []merchant.Module{
 		&clients.Module{},

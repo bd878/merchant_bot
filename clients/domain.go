@@ -26,3 +26,15 @@ func (m Module) RestoreChat(ctx context.Context, chat *merchant.Chat) error {
 	}
 	return nil
 }
+
+func (m Module) Find(ctx context.Context, id int64) (*merchant.Chat, error) {
+	chat, ok := m.app.Chats().Get(id)
+	if !ok {
+		chat, err := m.repo.FindChat(ctx, id)
+		if err != nil {
+			return nil, err
+		}
+		return chat, nil
+	}
+	return chat, nil
+}

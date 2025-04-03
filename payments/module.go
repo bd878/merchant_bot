@@ -10,11 +10,22 @@ import (
 type Module struct {
 	repo *Repository
 	log *merchant.Logger
+	clients *ClientsDomain
 }
 
 func (m *Module) Startup(ctx context.Context, app merchant.Monolith) error {
 	m.repo = NewRepository("marchandise.payments.payments", app.Pool())
 	m.log = app.Log()
+
+	for _, module := range app.Modules() {
+		if module.Name() == "clients" {
+			clients, ok := module.(ClientsRepository)
+			if !ok {
+				m.log.Fatalln("module does not implement ClientsRepository")
+			}
+			m.clients = NewClientsDomain(clients)
+		}
+	}
 
 	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/invoice", bot.MatchTypeExact, m.InvoiceHandler)
 	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/transactions", bot.MatchTypeExact, m.ShowTransactions, merchant.HasUserMiddleware)
@@ -26,6 +37,8 @@ func (m *Module) Startup(ctx context.Context, app merchant.Monolith) error {
 
 	return nil
 }
+
+func (Module) Name() string { return "payments" }
 
 func PreCheckoutUpdateMatch(update *models.Update) bool {
 	return update.PreCheckoutQuery != nil

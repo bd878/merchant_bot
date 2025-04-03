@@ -25,11 +25,18 @@ func (m Module) MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *m
 	m.log.Infow("restored", "chat_id", update.Message.Chat.ID)
 }
 
-// IMPORTANT for turn backs: https://core.telegram.org/bots/payments-stars#live-checklist
+// https://core.telegram.org/bots/payments-stars#live-checklist
 func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	chat, ok := ctx.Value(&chatKey{}).(*merchant.Chat)
+	if !ok {
+		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
+		return
+	}
+
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: merchant.LangRu.Text("terms"),
+		ReplyMarkup: BackKeyboard(chat.Lang),
 	})
 	if err != nil {
 		m.log.Errorw("failed to send terms", "error", err)

@@ -13,6 +13,11 @@ func TransactionsKeyboard(code merchant.LangCode, transactions []*merchant.Payme
 			{Text: fmt.Sprintf("%d - %d", tr.TotalAmount, tr.ID), CallbackData: fmt.Sprintf("tr:%d", tr.ID)},
 		})
 	}
+
+	keyboards = append(keyboards, []models.InlineKeyboardButton{
+		{Text: fmt.Sprintf("%s", code.Text("back")), CallbackData: "back"},
+	})
+
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: keyboards,
 	}
@@ -23,6 +28,9 @@ func RefundKeyboard(code merchant.LangCode, trID uint32) *models.InlineKeyboardM
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
 				{Text: code.Text("refund"), CallbackData: fmt.Sprintf("refund:%d", trID)},
+			},
+			{
+				{Text: code.Text("back"), CallbackData: "back"},
 			},
 		},
 	}

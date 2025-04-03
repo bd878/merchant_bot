@@ -14,27 +14,36 @@ type app struct {
 	chats *merchant.Chats
 	bot   *merchant.Bot
 	log   *merchant.Logger
+	history *merchant.History
 	modules []merchant.Module
 }
 
-func (a *app) Config() merchant.Config {
+func (a app) Config() merchant.Config {
 	return a.conf
 }
 
-func (a *app) Pool() *pgxpool.Pool {
+func (a app) Pool() *pgxpool.Pool {
 	return a.pool
 }
 
-func (a *app) Bot() *merchant.Bot {
+func (a app) Bot() *merchant.Bot {
 	return a.bot
 }
 
-func (a *app) Chats() *merchant.Chats {
+func (a app) Chats() *merchant.Chats {
 	return a.chats
 }
 
-func (a *app) Log() *merchant.Logger {
+func (a app) Log() *merchant.Logger {
 	return a.log
+}
+
+func (a app) History() *merchant.History {
+	return a.history
+}
+
+func (a app) Modules() []merchant.Module {
+	return a.modules
 }
 
 func (a *app) startupModules() error {

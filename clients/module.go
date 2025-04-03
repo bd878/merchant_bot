@@ -27,6 +27,8 @@ func (m *Module) Startup(ctx context.Context, app merchant.Monolith) error {
 	return nil
 }
 
+func (Module) Name() string { return "clients" }
+
 func MemberKickedMatch(update *models.Update) bool {
 	if update.MyChatMember != nil {
 		return (
