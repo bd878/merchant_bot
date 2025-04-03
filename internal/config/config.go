@@ -1,4 +1,4 @@
-package merchant_bot
+package config
 
 type Config struct {
 	PGConn           string     `json:"pg_conn"`

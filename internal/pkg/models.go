@@ -1,9 +1,13 @@
-package merchant_bot
+package pkg
 
 import (
 	"time"
 	"github.com/go-telegram/bot/models"
+	"github.com/bd878/merchant_bot/internal/i18n"
 )
+
+type ChatKey struct {}
+type LangKey struct {}
 
 type Payment struct {
 	*models.SuccessfulPayment
@@ -15,5 +19,5 @@ type Payment struct {
 
 type Chat struct {
 	*models.Chat
-	Lang LangCode
+	Lang i18n.LangCode
 }

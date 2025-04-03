@@ -1,4 +1,4 @@
-package merchant_bot
+package logger
 
 import "go.uber.org/zap"
 
@@ -6,10 +6,10 @@ type Logger struct {
 	*zap.SugaredLogger
 }
 
-var log *Logger = (*Logger)(nil)
+var Log *Logger = (*Logger)(nil)
 
 func init() {
-	log = NewProduction()
+	Log = NewProduction()
 }
 
 func NewProduction(options ...zap.Option) *Logger {
@@ -25,5 +25,5 @@ func NewDevelopment(options ...zap.Option) *Logger {
 }
 
 func NewLog() *Logger {
-	return log
+	return Log
 }

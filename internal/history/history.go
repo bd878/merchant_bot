@@ -1,4 +1,4 @@
-package merchant_bot
+package history
 
 type History struct {}
 

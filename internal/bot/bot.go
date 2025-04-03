@@ -1,10 +1,11 @@
-package merchant_bot
+package bot
 
 import (
 	"context"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
+	"github.com/bd878/merchant_bot/internal/logger"
 )
 
 type Bot struct {
@@ -33,7 +34,7 @@ func NewBot(token, webhookToken, webhookURL string, opts ...bot.Option) *Bot {
 
 func defaultHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	if update.Message == nil {
-		log.Errorln("message is nil, exit")
+		logger.Log.Errorln("message is nil, exit")
 		return
 	}
 

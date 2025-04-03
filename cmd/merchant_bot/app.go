@@ -5,20 +5,25 @@ import (
 	"context"
 	"net/http"
 	"github.com/jackc/pgx/v5/pgxpool"
-	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/internal/config"
+	"github.com/bd878/merchant_bot/internal/chats"
+	"github.com/bd878/merchant_bot/internal/bot"
+	"github.com/bd878/merchant_bot/internal/logger"
+	"github.com/bd878/merchant_bot/internal/system"
+	"github.com/bd878/merchant_bot/internal/history"
 )
 
 type app struct {
-	conf   merchant.Config
+	conf   config.Config
 	pool  *pgxpool.Pool
-	chats *merchant.Chats
-	bot   *merchant.Bot
-	log   *merchant.Logger
-	history *merchant.History
-	modules []merchant.Module
+	chats *chats.Chats
+	bot   *bot.Bot
+	log   *logger.Logger
+	history *history.History
+	modules []system.Module
 }
 
-func (a app) Config() merchant.Config {
+func (a app) Config() config.Config {
 	return a.conf
 }
 
@@ -26,23 +31,23 @@ func (a app) Pool() *pgxpool.Pool {
 	return a.pool
 }
 
-func (a app) Bot() *merchant.Bot {
+func (a app) Bot() *bot.Bot {
 	return a.bot
 }
 
-func (a app) Chats() *merchant.Chats {
+func (a app) Chats() *chats.Chats {
 	return a.chats
 }
 
-func (a app) Log() *merchant.Logger {
+func (a app) Log() *logger.Logger {
 	return a.log
 }
 
-func (a app) History() *merchant.History {
+func (a app) History() *history.History {
 	return a.history
 }
 
-func (a app) Modules() []merchant.Module {
+func (a app) Modules() []system.Module {
 	return a.modules
 }
 

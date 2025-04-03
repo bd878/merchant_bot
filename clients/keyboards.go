@@ -3,10 +3,10 @@ package clients
 import (
 	"fmt"
 	"github.com/go-telegram/bot/models"
-	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/internal/i18n"
 )
 
-func BackKeyboard(code merchant.LangCode, clientID int64) *models.InlineKeyboardMarkup {
+func BackKeyboard(code i18n.LangCode, clientID int64) *models.InlineKeyboardMarkup {
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
@@ -16,7 +16,7 @@ func BackKeyboard(code merchant.LangCode, clientID int64) *models.InlineKeyboard
 	}
 }
 
-func SettingsKeyboard(code merchant.LangCode, clientID int64) *models.InlineKeyboardMarkup {
+func SettingsKeyboard(code i18n.LangCode, clientID int64) *models.InlineKeyboardMarkup {
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{

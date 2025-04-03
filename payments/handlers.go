@@ -6,7 +6,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/internal/pkg"
 )
 
 var (
@@ -35,7 +35,7 @@ func (m Module) RefundTransactionhandler(ctx context.Context, b *bot.Bot, update
 		return
 	}
 
-	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {
 		m.log.Errorln("no chat key")
 		return
@@ -85,7 +85,7 @@ func (m Module) ShowTransactionHandler(ctx context.Context, b *bot.Bot, update *
 		return
 	}
 
-	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {
 		m.log.Errorln("no chat key")
 		return
@@ -134,7 +134,7 @@ func (m Module) PreCheckoutUpdateHandler(ctx context.Context, b *bot.Bot, update
 func (m Module) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	id := uuid.New().ID()
 
-	err := m.repo.SavePayment(ctx, &merchant.Payment{
+	err := m.repo.SavePayment(ctx, &pkg.Payment{
 		SuccessfulPayment: update.Message.SuccessfulPayment,
 		ID: id,
 		UserID: update.Message.From.ID,
@@ -146,7 +146,7 @@ func (m Module) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, updat
 }
 
 func (m Module) ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
-	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {
 		m.log.Errorln("no chat key")
 		return

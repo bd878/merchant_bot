@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-telegram/bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
-	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/internal/pkg"
 )
 
 type Repository struct {
@@ -21,7 +21,7 @@ func NewRepository(tableName string, pool *pgxpool.Pool) *Repository {
 	}
 }
 
-func (r Repository) SavePayment(ctx context.Context, payment *merchant.Payment) error {
+func (r Repository) SavePayment(ctx context.Context, payment *pkg.Payment) error {
 	const query = `
 INSERT INTO %s (id, user_id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount)
 VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
@@ -41,7 +41,7 @@ func (r Repository) RefundPayment(ctx context.Context, id uint32) error {
 	return err
 }
 
-func (r Repository) ListUserTransactions(ctx context.Context, userID int64, limit, offset int) ([]*merchant.Payment, error) {
+func (r Repository) ListUserTransactions(ctx context.Context, userID int64, limit, offset int) ([]*pkg.Payment, error) {
 	const query = `
 SELECT id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount, created_at
 FROM %s WHERE user_id = $1
@@ -54,10 +54,10 @@ LIMIT $2 OFFSET $3
 		return nil, err
 	}
 
-	payments := make([]*merchant.Payment, 0)
+	payments := make([]*pkg.Payment, 0)
 
 	for rows.Next() {
-		payment := &merchant.Payment{
+		payment := &pkg.Payment{
 			SuccessfulPayment: &models.SuccessfulPayment{},
 			UserID: userID,
 		}
@@ -77,13 +77,13 @@ LIMIT $2 OFFSET $3
 	return payments, nil
 }
 
-func (r Repository) FindPayment(ctx context.Context, id uint32) (*merchant.Payment, error) {
+func (r Repository) FindPayment(ctx context.Context, id uint32) (*pkg.Payment, error) {
 	const query = `
 SELECT user_id, refunded, telegram_payment_charge_id, provider_payment_charge_id, invoice_payload, currency, total_amount
 FROM %s WHERE id = $1 LIMIT 1
 	`
 
-	payment := &merchant.Payment{
+	payment := &pkg.Payment{
 		ID: id,
 		SuccessfulPayment: &models.SuccessfulPayment{
 		},

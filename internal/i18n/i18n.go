@@ -1,9 +1,10 @@
-package merchant_bot
+package i18n
 
 import (
 	_ "embed"
 	"reflect"
 	"encoding/json"
+	"github.com/bd878/merchant_bot/internal/logger"
 )
 
 type translations struct {
@@ -22,19 +23,19 @@ func (t translations) Get(code LangCode, key string) string {
 	value := reflect.ValueOf(t)
 	fieldValue := value.FieldByName(code.String())
 	if !fieldValue.IsValid() {
-		log.Errorw("field value is invalid", "value", fieldValue.String())
+		logger.Log.Errorw("field value is invalid", "value", fieldValue.String())
 		return ""
 	}
 
 	dict, ok := fieldValue.Interface().(map[string]string)
 	if !ok {
-		log.Error("not ok")
+		logger.Log.Error("not ok")
 		return ""
 	}
 
 	text, ok := dict[key]
 	if !ok {
-		log.Errorln("cannot convert field value to map[string]string")
+		logger.Log.Errorln("cannot convert field value to map[string]string")
 		return ""
 	}
 
@@ -45,19 +46,19 @@ func (d declinations) Get(code LangCode, key string) []string {
 	value := reflect.ValueOf(d)
 	fieldValue := value.FieldByName(code.String())
 	if !fieldValue.IsValid() {
-		log.Errorw("field value is invalid", "value", fieldValue.String())
+		logger.Log.Errorw("field value is invalid", "value", fieldValue.String())
 		return emptyDecl
 	}
 
 	translations, ok := fieldValue.Interface().(map[string][]string)
 	if !ok {
-		log.Error("not ok")
+		logger.Log.Error("not ok")
 		return emptyDecl
 	}
 
 	texts, ok := translations[key]
 	if !ok {
-		log.Errorln("cannot convert field value to map[string]string")
+		logger.Log.Errorln("cannot convert field value to map[string]string")
 		return emptyDecl
 	}
 

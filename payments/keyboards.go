@@ -3,10 +3,11 @@ package payments
 import (
 	"fmt"
 	"github.com/go-telegram/bot/models"
-	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/internal/i18n"
+	"github.com/bd878/merchant_bot/internal/pkg"
 )
 
-func TransactionsKeyboard(code merchant.LangCode, transactions []*merchant.Payment, clientID int64) *models.InlineKeyboardMarkup {
+func TransactionsKeyboard(code i18n.LangCode, transactions []*pkg.Payment, clientID int64) *models.InlineKeyboardMarkup {
 	keyboards := make([][]models.InlineKeyboardButton, 0)
 	for _, tr := range transactions {
 		keyboards = append(keyboards, []models.InlineKeyboardButton{
@@ -23,7 +24,7 @@ func TransactionsKeyboard(code merchant.LangCode, transactions []*merchant.Payme
 	}
 }
 
-func RefundKeyboard(code merchant.LangCode, trID uint32, clientID int64) *models.InlineKeyboardMarkup {
+func RefundKeyboard(code i18n.LangCode, trID uint32, clientID int64) *models.InlineKeyboardMarkup {
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{

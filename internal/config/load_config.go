@@ -1,4 +1,4 @@
-package merchant_bot
+package config
 
 import (
 	"os"

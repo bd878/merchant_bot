@@ -4,7 +4,8 @@ import (
 	"context"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	merchant "github.com/bd878/merchant_bot"
+	"github.com/bd878/merchant_bot/internal/pkg"
+	"github.com/bd878/merchant_bot/internal/i18n"
 )
 
 func (m Module) StartHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
@@ -27,7 +28,7 @@ func (m Module) MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *m
 
 // https://core.telegram.org/bots/payments-stars#live-checklist
 func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {
 		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
 		return
@@ -35,7 +36,7 @@ func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text: merchant.LangRu.Text("terms"),
+		Text: i18n.LangRu.Text("terms"),
 		ReplyMarkup: BackKeyboard(chat.Lang, chat.ID),
 	})
 	if err != nil {
@@ -44,13 +45,13 @@ func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 }
 
 func (m Module) ChangeLanguageHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {
 		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
 		return
 	}
 
-	lang, ok := ctx.Value(&langKey{}).(merchant.LangCode)
+	lang, ok := ctx.Value(&pkg.LangKey{}).(i18n.LangCode)
 	if !ok {
 		m.log.Errorw("no lang key", "chat_id", update.Message.Chat.ID)
 		return

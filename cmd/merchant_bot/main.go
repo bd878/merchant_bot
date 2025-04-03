@@ -9,9 +9,14 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/go-telegram/bot"
 
-	merchant "github.com/bd878/merchant_bot"
 	"github.com/bd878/merchant_bot/clients"
 	"github.com/bd878/merchant_bot/payments"
+	"github.com/bd878/merchant_bot/internal/config"
+	"github.com/bd878/merchant_bot/internal/system"
+	"github.com/bd878/merchant_bot/internal/chats"
+	"github.com/bd878/merchant_bot/internal/history"
+	"github.com/bd878/merchant_bot/internal/logger"
+	merchantBot "github.com/bd878/merchant_bot/internal/bot"
 )
 
 func main() {
@@ -23,8 +28,8 @@ func main() {
 
 	m := app{}
 
-	m.conf = merchant.LoadConfig(configPath)
-	m.log = merchant.NewLog()
+	m.conf = config.LoadConfig(configPath)
+	m.log = logger.NewLog()
 	defer m.log.Sync()
 
 	var err error
@@ -34,19 +39,17 @@ func main() {
 	}
 	defer m.pool.Close()
 
-	m.chats = merchant.NewChats()
-	m.history = merchant.NewHistory()
+	m.chats = chats.NewChats("marchandise.chat.chat", m.pool)
+	m.history = history.NewHistory()
 
-	clientsModule := &clients.Module{}
-
-	m.bot = merchant.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
+	m.bot = merchantBot.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
 		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
 		bot.WithDebug(),
-		bot.WithMiddlewares(clientsModule.RestoreChatMiddleware))
+		bot.WithMiddlewares(m.chats.RestoreChatMiddleware))
 
 	// TODO: use grpc for inter-module communications
-	m.modules = []merchant.Module{
-		clientsModule,
+	m.modules = []system.Module{
+		&clients.Module{},
 		&payments.Module{},
 	}
 
