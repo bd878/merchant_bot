@@ -2,12 +2,16 @@ package clients
 
 import (
 	"context"
+	"strings"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	merchant "github.com/bd878/merchant_bot"
 )
 
-type chatKey struct {}
+type (
+	chatKey struct {}
+	langKey struct {}
+)
 
 func (m Module) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
@@ -19,6 +23,21 @@ func (m Module) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 				return
 			}
 			ctx = context.WithValue(ctx, &chatKey{}, chat)
+		}
+		h(ctx, bot, update)
+	}
+}
+
+func (m Module) LangMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
+	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
+		if update.Message != nil {
+			parts := strings.Split(update.CallbackQuery.Data, ":")
+			langStr := parts[len(parts)-1]
+			if langStr == "" {
+				m.log.Errorw("empty lang string", "id", update.Message.Chat.ID)
+				return
+			}
+			ctx = context.WithValue(ctx, &langKey{}, merchant.LangFromString(langStr))
 		}
 		h(ctx, bot, update)
 	}

@@ -4,6 +4,8 @@
 		"back": "Назад",
 		"transactions": "Транзакции",
 		"terms": "Условия использования бота",
+		"ru": "русский",
+		"en": "английский",
 		"amount": "Сумма",
 		"refund": "Выполнить возврат",
 		"refunded": "Выполнен возврат",
@@ -12,6 +14,8 @@
 	"en": {
 		"test": "abc",
 		"back": "Back",
+		"ru": "russian",
+		"en": "english",
 		"transactions": "Transactions",
 		"terms": "Terms conditions",
 		"amount": "Amount",

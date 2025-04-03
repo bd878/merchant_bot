@@ -36,9 +36,38 @@ func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
 		Text: merchant.LangRu.Text("terms"),
-		ReplyMarkup: BackKeyboard(chat.Lang),
+		ReplyMarkup: BackKeyboard(chat.Lang, chat.ID),
 	})
 	if err != nil {
 		m.log.Errorw("failed to send terms", "error", err)
+	}
+}
+
+func (m Module) ChangeLanguageHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	chat, ok := ctx.Value(&chatKey{}).(*merchant.Chat)
+	if !ok {
+		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
+		return
+	}
+
+	lang, ok := ctx.Value(&langKey{}).(merchant.LangCode)
+	if !ok {
+		m.log.Errorw("no lang key", "chat_id", update.Message.Chat.ID)
+		return
+	}
+
+	chat.Lang = lang
+	err := m.repo.Update(ctx, chat)
+	if err != nil {
+		m.log.Errorw("repo failed to update lang code", "chat_id", chat.ID, "error", err)
+		return
+	}
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: "ok",
+	})
+	if err != nil {
+		m.log.Errorw("failed to send message", "error", err)
 	}
 }

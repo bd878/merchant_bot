@@ -56,6 +56,14 @@ func (r Repository) SaveChat(ctx context.Context, chat *merchant.Chat) error {
 	return err
 }
 
+func (r Repository) Update(ctx context.Context, chat *merchant.Chat) error {
+	const query = "UPDATE %s SET lang = $1 WHERE id = $2"
+
+	_, err := r.pool.Exec(ctx, r.table(query), chat.Lang.String(), chat.ID)
+
+	return err
+}
+
 func (r Repository) table(query string) string {
 	return fmt.Sprintf(query, r.tableName)
 }
