@@ -44,6 +44,23 @@ func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 	}
 }
 
+func (m Module) SettingsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
+	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
+	if !ok {
+		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
+		return
+	}
+
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: chat.Lang.Text("settings"),
+		ReplyMarkup: SettingsKeyboard(chat.Lang, chat.ID),
+	})
+	if err != nil {
+		m.log.Errorw("failed to send message", "error", err)
+	}
+}
+
 func (m Module) ChangeLanguageHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {

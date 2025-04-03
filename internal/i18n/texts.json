@@ -1,6 +1,7 @@
 {
 	"ru": {
 		"test": "абв",
+		"settings": "Настройки",
 		"back": "Назад",
 		"transactions": "Транзакции",
 		"terms": "Условия использования бота",
@@ -14,6 +15,7 @@
 	"en": {
 		"test": "abc",
 		"back": "Back",
+		"settings": "Settings",
 		"ru": "russian",
 		"en": "english",
 		"transactions": "Transactions",
