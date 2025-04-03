@@ -7,7 +7,7 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-func HasUserMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
+func HasMessageFromMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
 		if update.Message != nil && update.Message.From != nil {
 			h(ctx, bot, update)

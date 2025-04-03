@@ -10,7 +10,7 @@ func BackKeyboard(code merchant.LangCode, clientID int64) *models.InlineKeyboard
 	return &models.InlineKeyboardMarkup{
 		InlineKeyboard: [][]models.InlineKeyboardButton{
 			{
-				{Text: "< " + code.Text("back"), CallbackData: fmt.Sprintf("back:%d", clientID)},
+				{Text: "« " + code.Text("back"), CallbackData: fmt.Sprintf("back:%d", clientID)},
 			},
 		},
 	}
@@ -24,7 +24,7 @@ func SettingsKeyboard(code merchant.LangCode, clientID int64) *models.InlineKeyb
 				{Text: "🇷🇺 " + code.Text("ru"), CallbackData: fmt.Sprintf("ru:%d",clientID)},
 			},
 			{
-				{Text: "< " + code.Text("back"), CallbackData: fmt.Sprintf("back:%d", clientID)},
+				{Text: "« " + code.Text("back"), CallbackData: fmt.Sprintf("back:%d", clientID)},
 			},
 		},
 	}

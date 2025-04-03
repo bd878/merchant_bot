@@ -35,6 +35,12 @@ func (m Module) RefundTransactionhandler(ctx context.Context, b *bot.Bot, update
 		return
 	}
 
+	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	if !ok {
+		m.log.Errorln("no chat key")
+		return
+	}
+
 	err := m.repo.RefundPayment(ctx, uint32(id))
 	if err != nil {
 		m.log.Errorw("failed to make a refund", "id", id, "error", err)
@@ -63,7 +69,7 @@ func (m Module) RefundTransactionhandler(ctx context.Context, b *bot.Bot, update
 
 	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: payment.UserID,
-		Text: fmt.Sprintf("%s", merchant.LangRu.Text("refunded_success")),
+		Text: fmt.Sprintf("%s", chat.Lang.Text("refunded_success")),
 	})
 	if err != nil {
 		m.log.Errorw("failed to send refund message", "id", id, "error", err)
@@ -79,6 +85,12 @@ func (m Module) ShowTransactionHandler(ctx context.Context, b *bot.Bot, update *
 		return
 	}
 
+	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	if !ok {
+		m.log.Errorln("no chat key")
+		return
+	}
+
 	payment, err := m.repo.FindPayment(ctx, uint32(id))
 	if err != nil {
 		m.log.Errorw("cannot find transaction", "id", id, "error", err)
@@ -88,13 +100,13 @@ func (m Module) ShowTransactionHandler(ctx context.Context, b *bot.Bot, update *
 	if payment.Refunded {
 		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: payment.UserID,
-			Text: fmt.Sprintf("%d\n%s", payment.TotalAmount, merchant.LangRu.Text("refunded")),
+			Text: fmt.Sprintf("%d\n%s", payment.TotalAmount, chat.Lang.Text("refunded")),
 		})
 	} else {
 		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: payment.UserID,
 			Text: fmt.Sprintf("%d", payment.TotalAmount),
-			ReplyMarkup: RefundKeyboard(merchant.LangRu, payment.ID),
+			ReplyMarkup: RefundKeyboard(chat.Lang, payment.ID, chat.ID),
 		})
 	}
 
@@ -134,6 +146,12 @@ func (m Module) SuccessfullPaymentHandler(ctx context.Context, b *bot.Bot, updat
 }
 
 func (m Module) ShowTransactions(ctx context.Context, b *bot.Bot, update *models.Update) {
+	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
+	if !ok {
+		m.log.Errorln("no chat key")
+		return
+	}
+
 	transactions, err := m.repo.ListUserTransactions(ctx, update.Message.From.ID, 10, 0)
 	if err != nil {
 		m.log.Errorw("failed to get user star transactions", "user_id", update.Message.From.ID, "error", err)
@@ -142,8 +160,8 @@ func (m Module) ShowTransactions(ctx context.Context, b *bot.Bot, update *models
 
 	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: update.Message.Chat.ID,
-		Text: merchant.LangRu.Text("transactions"),
-		ReplyMarkup: TransactionsKeyboard(merchant.LangRu, transactions),
+		Text: chat.Lang.Text("transactions"),
+		ReplyMarkup: TransactionsKeyboard(chat.Lang, transactions, chat.ID),
 	})
 	if err != nil {
 		m.log.Errorw("failed to send transactions", "error", err)

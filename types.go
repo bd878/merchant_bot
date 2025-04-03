@@ -5,6 +5,8 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+type ChatKey struct {}
+
 type Monolith interface {
 	Pool() *pgxpool.Pool
 	Bot() *Bot

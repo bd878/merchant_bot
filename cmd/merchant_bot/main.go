@@ -27,10 +27,6 @@ func main() {
 	m.log = merchant.NewLog()
 	defer m.log.Sync()
 
-	m.bot = merchant.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
-		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
-		bot.WithDebug())
-
 	var err error
 	m.pool, err = pgxpool.New(context.Background(), m.conf.PGConn)
 	if err != nil {
@@ -38,12 +34,19 @@ func main() {
 	}
 	defer m.pool.Close()
 
-	// TODO: use grpc for inter-module communications
 	m.chats = merchant.NewChats()
 	m.history = merchant.NewHistory()
 
+	clientsModule := &clients.Module{}
+
+	m.bot = merchant.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
+		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
+		bot.WithDebug(),
+		bot.WithMiddlewares(clientsModule.RestoreChatMiddleware))
+
+	// TODO: use grpc for inter-module communications
 	m.modules = []merchant.Module{
-		&clients.Module{},
+		clientsModule,
 		&payments.Module{},
 	}
 

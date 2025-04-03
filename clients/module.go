@@ -18,12 +18,12 @@ func (m *Module) Startup(ctx context.Context, app merchant.Monolith) error {
 	m.log = app.Log()
 	m.app = app
 
-	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, m.StartHandler, m.RestoreChatMiddleware)
-	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/terms", bot.MatchTypeExact, m.TermsHandler, m.RestoreChatMiddleware)
-	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/settings", bot.MatchTypeExact, m.ChangeLanguageHandler, m.RestoreChatMiddleware)
+	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, m.StartHandler)
+	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/terms", bot.MatchTypeExact, m.TermsHandler)
+	app.Bot().RegisterHandler(bot.HandlerTypeMessageText, "/settings", bot.MatchTypeExact, m.ChangeLanguageHandler)
 
-	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "ru:", bot.MatchTypePrefix, m.ChangeLanguageHandler, m.RestoreChatMiddleware, m.LangMiddleware)
-	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "en:", bot.MatchTypePrefix, m.ChangeLanguageHandler, m.RestoreChatMiddleware, m.LangMiddleware)
+	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "ru:", bot.MatchTypePrefix, m.ChangeLanguageHandler, m.LangMiddleware)
+	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "en:", bot.MatchTypePrefix, m.ChangeLanguageHandler, m.LangMiddleware)
 	app.Bot().RegisterHandlerMatchFunc(MemberKickedMatch, m.MemberKickedHandler)
 	app.Bot().RegisterHandlerMatchFunc(MemberRestoredMatch, m.MemberRestoredHandler)
 

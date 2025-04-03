@@ -27,7 +27,7 @@ func (m Module) MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *m
 
 // https://core.telegram.org/bots/payments-stars#live-checklist
 func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	chat, ok := ctx.Value(&chatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
 	if !ok {
 		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
 		return
@@ -44,7 +44,7 @@ func (m Module) TermsHandler(ctx context.Context, b *bot.Bot, update *models.Upd
 }
 
 func (m Module) ChangeLanguageHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
-	chat, ok := ctx.Value(&chatKey{}).(*merchant.Chat)
+	chat, ok := ctx.Value(&merchant.ChatKey{}).(*merchant.Chat)
 	if !ok {
 		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
 		return

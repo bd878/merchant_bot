@@ -9,7 +9,6 @@ import (
 )
 
 type (
-	chatKey struct {}
 	langKey struct {}
 )
 
@@ -22,7 +21,7 @@ func (m Module) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 				m.log.Errorw("failed to restore a chat", "error", err)
 				return
 			}
-			ctx = context.WithValue(ctx, &chatKey{}, chat)
+			ctx = context.WithValue(ctx, &merchant.ChatKey{}, chat)
 		}
 		h(ctx, bot, update)
 	}

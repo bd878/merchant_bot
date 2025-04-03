@@ -8,7 +8,9 @@ import (
 	"github.com/go-telegram/bot/models"
 )
 
-type idKey struct {}
+type (
+	idKey struct {}
+)
 
 func (m Module) GetTransactionIDMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
