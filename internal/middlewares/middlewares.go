@@ -33,10 +33,16 @@ func HasMessageFromMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 func AnswerCallbackQueryMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, b *bot.Bot, update *models.Update) {
 		if update.CallbackQuery != nil {
-			b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
+			ok, err := b.AnswerCallbackQuery(ctx, &bot.AnswerCallbackQueryParams{
 				CallbackQueryID: update.CallbackQuery.ID,
 				ShowAlert:       false,
 			})
+			if !ok {
+				logger.Log.Errorln("answer callback query returned false")
+			}
+			if err != nil {
+				logger.Log.Errorw("failed ot answer callback query", "error", err)
+			}
 		}
 		h(ctx, b, update)
 	}

@@ -12,6 +12,7 @@ import (
 
 	"github.com/bd878/merchant_bot/internal/pkg"
 	"github.com/bd878/merchant_bot/internal/i18n"
+	"github.com/bd878/merchant_bot/internal/logger"
 )
 
 type Chats struct {
@@ -39,9 +40,11 @@ func (c *Chats) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 					if err == pgx.ErrNoRows {
 						err = c.repo.CreateChat(ctx, chat)
 						if err != nil {
+							logger.Log.Errorw("failed to create chat", "error", err)
 							return
 						}
 					} else {
+						logger.Log.Errorw("failed to find chat", "error", err)
 						return
 					}
 				}

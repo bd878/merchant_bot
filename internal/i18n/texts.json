@@ -3,6 +3,7 @@
 		"test": "абв",
 		"settings": "Настройки",
 		"back": "Назад",
+		"start_text": "Бот-кошелёк для telegram stars!\nОтправьте боту telegram starts с /invoice\nЧтобы вернуть starts обратно, перейдите в /transactions\nНастройки языка бота /settings",
 		"transactions": "Транзакции",
 		"terms": "Условия использования бота",
 		"ru": "русский",
@@ -10,11 +11,13 @@
 		"amount": "Сумма",
 		"refund": "Выполнить возврат",
 		"refunded": "Выполнен возврат",
+		"select_lang": "Выберите язык бота",
 		"refunded_success": "Возврат выполнен на ваш баланс"
 	},
 	"en": {
 		"test": "abc",
 		"back": "Back",
+		"start_text": "Bot-wallet for telegram stars!\nSend bot telegram stars via /invoice\nTo make a refund, select /transactions\nLanguage settings /settings",
 		"settings": "Settings",
 		"ru": "russian",
 		"en": "english",
@@ -23,6 +26,7 @@
 		"amount": "Amount",
 		"refund": "Refund",
 		"refunded": "Refunded",
+		"select_lang": "Select bot language",
 		"refunded_success": "Refunded successfully on your balance"
 	}
 }

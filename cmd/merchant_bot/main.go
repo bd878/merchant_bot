@@ -40,12 +40,17 @@ func main() {
 	defer m.pool.Close()
 
 	m.chats = chats.NewChats("marchandise.chat.chat", m.pool)
-	m.history = history.NewHistory()
+	m.history = history.NewHistory(m.chats)
 
 	m.bot = merchantBot.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
 		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
 		bot.WithDebug(),
-		bot.WithMiddlewares(m.chats.RestoreChatMiddleware))
+		bot.WithMiddlewares(m.chats.RestoreChatMiddleware),
+		bot.WithCallbackQueryDataHandler("back:", bot.MatchTypePrefix, m.history.StepBackHandler),
+		bot.WithCallbackQueryDataHandler("settings:", bot.MatchTypePrefix, m.history.SettingsCallbackHandler),
+		bot.WithMessageTextHandler("/settings", bot.MatchTypeExact, m.history.SettingsHandler),
+		bot.WithMessageTextHandler("/terms", bot.MatchTypeExact, m.history.TermsHandler),
+		bot.WithMessageTextHandler("/start", bot.MatchTypeExact, m.history.StartHandler))
 
 	// TODO: use grpc for inter-module communications
 	m.modules = []system.Module{

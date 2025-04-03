@@ -1,4 +1,4 @@
-package clients
+package keyboards
 
 import (
 	"fmt"
@@ -25,6 +25,16 @@ func SettingsKeyboard(code i18n.LangCode, clientID int64) *models.InlineKeyboard
 			},
 			{
 				{Text: "« " + code.Text("back"), CallbackData: fmt.Sprintf("back:%d", clientID)},
+			},
+		},
+	}
+}
+
+func StartKeyboard(code i18n.LangCode, clientID int64) *models.InlineKeyboardMarkup {
+	return &models.InlineKeyboardMarkup{
+		InlineKeyboard: [][]models.InlineKeyboardButton{
+			{
+				{Text: "⚙️ " + code.Text("settings"), CallbackData: fmt.Sprintf("settings:%d", clientID)},
 			},
 		},
 	}
