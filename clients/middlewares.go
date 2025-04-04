@@ -15,13 +15,13 @@ func (m Module) LangMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 			parts := strings.Split(update.CallbackQuery.Data, ":")
 			langStr := parts[0]
 			if langStr == "" {
-				m.log.Errorw("empty lang string", "id", update.CallbackQuery.From.ID)
+				m.app.Log().Errorw("empty lang string", "id", update.CallbackQuery.From.ID)
 				return
 			}
-			m.log.Debugw("select lang", "lang", langStr)
+			m.app.Log().Debugw("select lang", "lang", langStr)
 			ctx = context.WithValue(ctx, &pkg.LangKey{}, i18n.LangFromString(langStr))
 		} else {
-			m.log.Warnln("update is not a CallbackQuery")
+			m.app.Log().Warnln("update is not a CallbackQuery")
 		}
 		h(ctx, bot, update)
 	}

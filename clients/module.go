@@ -4,19 +4,16 @@ import (
 	"context"
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
-	"github.com/bd878/merchant_bot/internal/logger"
 	"github.com/bd878/merchant_bot/internal/system"
 )
 
 type Module struct {
 	repo *Repository
-	log *logger.Logger
 	app system.Monolith
 }
 
 func (m *Module) Startup(ctx context.Context, app system.Monolith) error {
 	m.repo = NewRepository("marchandise.chat.chat", app.Pool())
-	m.log = app.Log()
 	m.app = app
 
 	app.Bot().RegisterHandler(bot.HandlerTypeCallbackQueryData, "ru:", bot.MatchTypePrefix, m.ChangeLanguageHandler, m.LangMiddleware)
