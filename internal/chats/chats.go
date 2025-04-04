@@ -31,8 +31,14 @@ func NewChats(tableName string, pool *pgxpool.Pool) *Chats {
 
 func (c *Chats) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
+		var chat *pkg.Chat
 		if update.Message != nil {
-			chat := &pkg.Chat{Chat: &update.Message.Chat, Lang: i18n.LangRu}
+			chat = &pkg.Chat{Chat: &update.Message.Chat, Lang: i18n.LangRu}
+		} else if update.CallbackQuery != nil {
+			chat = &pkg.Chat{Chat: &update.CallbackQuery.Message.Message.Chat, Lang: i18n.LangRu}
+		}
+
+		if chat != nil {
 			_, ok := c.Get(chat.ID)
 			if !ok {
 				_, err := c.repo.FindChat(ctx, chat.ID)
@@ -52,8 +58,10 @@ func (c *Chats) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 				c.Set(chat.ID, chat)
 			}
 			ctx = context.WithValue(ctx, &pkg.ChatKey{}, chat)
+			h(ctx, bot, update)
+		} else {
+			logger.Log.Errorln("cannot restore chat middlware, no chat")
 		}
-		h(ctx, bot, update)
 	}
 }
 

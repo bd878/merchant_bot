@@ -2,6 +2,7 @@ package i18n
 
 import (
 	_ "embed"
+	"strings"
 	"reflect"
 	"encoding/json"
 	"github.com/bd878/merchant_bot/internal/logger"
@@ -89,6 +90,7 @@ type Translator interface {
 
 type LangCode string
 
+// reflected on translations/declinations struct keys
 const (
 	LangRu LangCode = "Ru"
 	LangEn LangCode = "En"
@@ -97,9 +99,9 @@ const (
 
 func LangFromString(code string) LangCode {
 	switch code {
-	case LangRu.String():
+	case LangRu.String(), strings.ToLower(LangRu.String()):
 		return LangRu
-	case LangEn.String():
+	case LangEn.String(), strings.ToLower(LangEn.String()):
 		return LangEn
 	default:
 		return LangRu

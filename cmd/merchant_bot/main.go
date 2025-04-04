@@ -16,6 +16,7 @@ import (
 	"github.com/bd878/merchant_bot/internal/chats"
 	"github.com/bd878/merchant_bot/internal/history"
 	"github.com/bd878/merchant_bot/internal/logger"
+	"github.com/bd878/merchant_bot/internal/middlewares"
 	merchantBot "github.com/bd878/merchant_bot/internal/bot"
 )
 
@@ -45,7 +46,7 @@ func main() {
 	m.bot = merchantBot.NewBot(os.Getenv("TELEGRAM_MERCHANT_BOT_TOKEN"),
 		os.Getenv("TELEGRAM_MERCHANT_BOT_WEBHOOK_SECRET_TOKEN"), m.Config().WebhookURL + m.Config().WebhookPath,
 		bot.WithDebug(),
-		bot.WithMiddlewares(m.chats.RestoreChatMiddleware),
+		bot.WithMiddlewares(m.chats.RestoreChatMiddleware, middlewares.AnswerCallbackQueryMiddleware),
 		bot.WithCallbackQueryDataHandler("back:", bot.MatchTypePrefix, m.history.StepBackHandler),
 		bot.WithCallbackQueryDataHandler("settings:", bot.MatchTypePrefix, m.history.SettingsCallbackHandler),
 		bot.WithMessageTextHandler("/settings", bot.MatchTypeExact, m.history.SettingsHandler),

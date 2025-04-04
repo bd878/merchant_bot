@@ -19,13 +19,13 @@ func (m Module) MemberRestoredHandler(ctx context.Context, b *bot.Bot, update *m
 func (m Module) ChangeLanguageHandler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	chat, ok := ctx.Value(&pkg.ChatKey{}).(*pkg.Chat)
 	if !ok {
-		m.log.Errorw("no chat key", "chat_id", update.Message.Chat.ID)
+		m.log.Errorw("no chat key", "chat_id", update.CallbackQuery.From.ID)
 		return
 	}
 
 	lang, ok := ctx.Value(&pkg.LangKey{}).(i18n.LangCode)
 	if !ok {
-		m.log.Errorw("no lang key", "chat_id", update.Message.Chat.ID)
+		m.log.Errorw("no lang key", "chat_id", update.CallbackQuery.From.ID)
 		return
 	}
 

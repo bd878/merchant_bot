@@ -130,21 +130,21 @@ func (h History) StepBackHandler(ctx context.Context, b *bot.Bot, update *models
 			logger.Log.Errorw("failed to answer callback query", "error", err)
 			return
 		}
-	}
 
-	chat, ok := h.chats.Get(update.CallbackQuery.From.ID)
-	if !ok {
-		logger.Log.Errorw("cannot find chat", "chat_id", chat.ID)
-		return
-	}
-	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: chat.ID,
-		Text: fmt.Sprintln(chat.Lang.Text("start_text")),
-		ReplyMarkup: keyboards.StartKeyboard(chat.Lang, chat.ID),
-	})
-	if err != nil {
-		logger.Log.Errorw("cannot send message", "chat_id", chat.ID, "error", err)
-		return
+		chat, ok := h.chats.Get(update.CallbackQuery.From.ID)
+		if !ok {
+			logger.Log.Errorw("cannot find chat", "chat_id", chat.ID)
+			return
+		}
+		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: chat.ID,
+			Text: fmt.Sprintln(chat.Lang.Text("start_text")),
+			ReplyMarkup: keyboards.StartKeyboard(chat.Lang, chat.ID),
+		})
+		if err != nil {
+			logger.Log.Errorw("cannot send message", "chat_id", chat.ID, "error", err)
+			return
+		}
 	} else {
 		logger.Log.Warnln("update.callbackQuery is nil")
 	}
