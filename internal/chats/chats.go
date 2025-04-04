@@ -31,20 +31,27 @@ func NewChats(tableName string, pool *pgxpool.Pool) *Chats {
 
 func (c *Chats) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
-		var chat *pkg.Chat
+		var (
+			chat *models.Chat
+			value *pkg.Chat
+			ok bool
+			err error
+		)
+
 		if update.Message != nil {
-			chat = &pkg.Chat{Chat: &update.Message.Chat, Lang: i18n.LangRu}
+			chat = &update.Message.Chat
 		} else if update.CallbackQuery != nil {
-			chat = &pkg.Chat{Chat: &update.CallbackQuery.Message.Message.Chat, Lang: i18n.LangRu}
+			chat = &update.CallbackQuery.Message.Message.Chat
 		}
 
 		if chat != nil {
-			_, ok := c.Get(chat.ID)
+			value, ok = c.Get(chat.ID)
 			if !ok {
-				_, err := c.repo.FindChat(ctx, chat.ID)
+				value, err = c.repo.FindChat(ctx, chat.ID)
 				if err != nil {
 					if err == pgx.ErrNoRows {
-						err = c.repo.CreateChat(ctx, chat)
+						value = &pkg.Chat{Chat: chat, Lang: i18n.LangRu}
+						err = c.repo.CreateChat(ctx, value)
 						if err != nil {
 							logger.Log.Errorw("failed to create chat", "error", err)
 							return
@@ -55,9 +62,9 @@ func (c *Chats) RestoreChatMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 					}
 				}
 
-				c.Set(chat.ID, chat)
+				c.Set(chat.ID, value)
 			}
-			ctx = context.WithValue(ctx, &pkg.ChatKey{}, chat)
+			ctx = context.WithValue(ctx, &pkg.ChatKey{}, value)
 			h(ctx, bot, update)
 		} else {
 			logger.Log.Errorln("cannot restore chat middlware, no chat")

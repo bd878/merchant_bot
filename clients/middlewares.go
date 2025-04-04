@@ -11,14 +11,17 @@ import (
 
 func (m Module) LangMiddleware(h bot.HandlerFunc) bot.HandlerFunc {
 	return func(ctx context.Context, bot *bot.Bot, update *models.Update) {
-		if update.Message != nil {
+		if update.CallbackQuery != nil {
 			parts := strings.Split(update.CallbackQuery.Data, ":")
-			langStr := parts[len(parts)-1]
+			langStr := parts[0]
 			if langStr == "" {
-				m.log.Errorw("empty lang string", "id", update.Message.Chat.ID)
+				m.app.Log().Errorw("empty lang string", "id", update.CallbackQuery.From.ID)
 				return
 			}
+			m.app.Log().Debugw("select lang", "lang", langStr)
 			ctx = context.WithValue(ctx, &pkg.LangKey{}, i18n.LangFromString(langStr))
+		} else {
+			m.app.Log().Warnln("update is not a CallbackQuery")
 		}
 		h(ctx, bot, update)
 	}

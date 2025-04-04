@@ -144,8 +144,6 @@ func (h History) StepBackHandler(ctx context.Context, b *bot.Bot, update *models
 		if err != nil {
 			logger.Log.Errorw("cannot send message", "chat_id", chat.ID, "error", err)
 			return
-		} else {
-			logger.Log.Warnln("update.callbackQuery is nil")
 		}
 	} else {
 		logger.Log.Warnln("update.callbackQuery is nil")
